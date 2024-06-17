@@ -1,13 +1,5 @@
-/*
-1 ~ n까지의 원소로 이루어진 배열을 만드는 함수를 재귀함수로 작성하시오.
-(단, array 메소드를 사용하지 말고, destructuring을 사용하시오)
-
-makeArray(10);
-⇒ [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-makeReverseArray(5);
-⇒ [5, 4, 3, 2, 1]
-*/
+/* 1 ~ n까지의 원소로 이루어진 배열을 만드는 함수를 재귀함수로 작성하시오.
+(단, array 메소드를 사용하지 말고, destructuring을 사용하시오) */
 
 function makeArray (num) {
     let arr = []; 
@@ -37,18 +29,10 @@ function makeResverseArray (num) {
 console.log(makeResverseArray(5));
 
 
-/*
-피보나치 수열을 
+/* 피보나치 수열을 
 1) Loop를 이용하여 작성하시오.
 2) 순수 재귀를 이용하여 작성하시오.
-3) memoization하여 작성하시오.
-
-수열의 규칙은 f(n) = f(n - 2) + f(n - 1)  (단, n <= 1 일 때 f(n) = n)
-즉, 0 ~ 9까지의 값은 [0, 1, 1, 2, 3, 5, 8, 13, 21, 34] 이다.
-fibonacci(5); // 5
-fibonacci(7); // 13
-fibonacci(30); // 832040
-*/
+3) memoization하여 작성하시오. */
 
 function fibonacci1 (n) {
     let obj = {}
