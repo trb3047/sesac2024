@@ -35,20 +35,18 @@ console.log(makeResverseArray(5));
 3) memoization하여 작성하시오. */
 
 function fibonacci1 (n) {
-    let obj = {}
-    let result = new Number;
-    for (let e = 0 ; e < n; e += 1) {
+    let obj = {};
+    for (let e =  0;e <= n; e += 1) {
         obj[e] = (e <= 1) ? e : (obj[e - 1] + obj[e - 2]);
     }
-    result = obj[n - 1] + obj[n - 2];
-    return result;
+    return obj[n];
 }
 
 function fibonacci2 (n) {
     return (n <= 1) ? n : fibonacci2(n - 2) + fibonacci2(n - 1);
 }
 
-const fibonacci3 = memoized (function A (n) {
+const fibonacci3 = memoized (function (n) {
     return (n <= 1) ? n : fibonacci3(n - 2) + fibonacci3(n -1);
 });
 
@@ -62,4 +60,4 @@ function memoized (fn) {
 
 console.log(fibonacci1(50));
 console.log(fibonacci2(30));
-console.log(fibonacci3(50));
+console.log(fibonacci3(60));
