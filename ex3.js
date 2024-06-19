@@ -36,7 +36,7 @@ console.log(makeResverseArray(5));
 
 function fibonacci1 (n) {
     let obj = {};
-    for (let e =  0;e <= n; e += 1) {
+    for (let e =  0; e <= n; e += 1) {
         obj[e] = (e <= 1) ? e : (obj[e - 1] + obj[e - 2]);
     }
     return obj[n];
@@ -58,6 +58,29 @@ function memoized (fn) {
     return memo;
 }
 
-console.log(fibonacci1(50));
-console.log(fibonacci2(30));
-console.log(fibonacci3(60));
+//console.log(fibonacci1(50));
+//console.log(fibonacci2(40));
+//console.log(fibonacci3(10));
+
+
+
+
+function facto (n) {
+    let stopN = 0;
+
+    return function fn (n) {
+        if (n < 1) return 1;
+        try {
+            return n + fn(n - 1);
+        } catch (err) {
+            const { message } = err;
+            if (message?.includes('Maximum call stack')) {
+                stopN = n;
+                facto (n);
+                return 0;
+            } 
+        }
+    }
+}
+
+console.log(facto(6000));
