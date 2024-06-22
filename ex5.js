@@ -5,7 +5,7 @@ const fn = once();
 function once() {
     let timer = 0;
 
-    function result (x, y, set) {
+    function result (x, y) {
         let ret = `금일 운행금지 차량은 끝번호 ${x}, ${y}입니다!`;
         if (timer === 0) {
             timer = 1;
@@ -32,9 +32,9 @@ const someFn2 = (id, nickname, email, level) =>
   console.log(`${id}/${nickname}/${email}/${level}`);
 
 const template = (fn) => (...arg) => {
-        before();
-        fn(...arg);
-        after();
+    before();
+    fn(...arg);
+    after();
 }
 
 const temp = template(someFn);  // before → someFn → after 실행
