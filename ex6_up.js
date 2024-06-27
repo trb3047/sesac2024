@@ -119,7 +119,7 @@ assert.strictEqual(ret2, 'a b c d e');
 // /////////////////////////////////////////////////////////
 
 // Array.reduce 함수를 고차 함수로 직접 구현하시오.
-const reduce = (arr, fn, initValue = 1)  => {
+const reduce = (arr, fn, initValue = (fn(0, 1) === 0) ? 1 : 0)  => {
     let ret = initValue;
     for (let i = 0; i < arr.length; i += 1) {
         ret = fn(ret, arr[i]);
@@ -133,7 +133,7 @@ reduce([1, 2, 3, 4, 5], (a, b) => a * b, 1); // 120이면 통과!
 reduce([2, 2, 2], (a, b) => a * b);          // 8이면 통과!
 reduce([3, 3, 3], (a, b) => a * b, 0);       // 0이면 통과!
 /////////////////////////////////////////////////////////
-
+return;
 // 다음과 같은 정수 배열이 주어졌을 때, reduce를 이용하여, 각 요소를 다음의 순서로 처리하시오.
 //  → 배열의 각 요소를 제곱   n => n ** 2            [square]
 //  → 배열 각 요소의 제곱근   n => Math.sqrt(n)      [sqrt]
