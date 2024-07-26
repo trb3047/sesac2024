@@ -6,7 +6,7 @@ class Emp {
     lastName;
 }
 
-const hong = new Proxy(new Emp, {
+const hong = new Proxy(new Emp(), {
     get (target, prop) {
         if(prop === 'fullName') {
             return `${target.firstName} ${target.lastName.toUpperCase()}`;
@@ -18,12 +18,12 @@ const hong = new Proxy(new Emp, {
     },
     set (target, prop, value) {
         if(prop === 'fullName') {
-            const v = value.split(' ');
-            if (v.length >= 2) {
-                target.firstName = v[0];
-                target.lastName = v[1];
+            const [ firstName, lastName ] = value.split(' ');
+            if (lastName) {
+                target.firstName = firstName;
+                target.lastName = lastName;
             } else {
-                target.lastName = v[0];
+                target.lastName = firstName;
             }
         } else {
             return target[prop] = value;
@@ -63,13 +63,11 @@ Array.prototype.rejectBy = function (k, v) {
     return this.filter((obj) => obj[k] !== v);
 }
 Array.prototype.sortBy = function (k) {
-    let sortType = 0;
-    let key = (k.match('desc')) ? (sortType = -1, k.split(':desc')[0]) : k;
+    let reverse = false;
+    let key = (k.match('desc')) ? (reverse = true, k.split(':desc')[0]) : k;
     let ret = this.map((val) => val[key]).sort();
-    if (sortType < 0) ret.reverse();
-    this.map((v) => {
-        for (let e in ret) if (v[key] === ret[e]) ret[e] = v; 
-    });
+    if (reverse) ret.reverse();
+    ret.map((v, i) => ret[i] = this.find((obj) => obj[key] === v));
     return ret;
 }
 
@@ -103,15 +101,13 @@ assert.deepStrictEqual(users.lastObject, kim);
 
 //ex1) Stack
 class Stack {
-    constructor () {
-        this.ret = [];
-    }
+    #ret = [];
     push (num) {
-        this.ret.push(num);
-        return this.ret;
+        this.#ret.push(num);
+        return this.#ret;
     }
     pop () {
-        return this.ret.pop();
+        return this.#ret.pop();
     }
 }
 
@@ -121,21 +117,18 @@ console.log(stack.pop()); // 마지막에 추가된 하나 꺼내기
 
 //ex2) Queue
 class Queue {
-    constructor () {
-        this.ret = [];
-    }
+    #ret = [];
     enqueue (num) {
-        this.ret.push(num);
-        return this.ret;
+        this.#ret.push(num);
+        return this.#ret;
     }
     dequeue () {
-        return this.ret.shift();
+        return this.#ret.shift();
     }
 }
 const queue = new Queue();
 queue.enqueue(3); // 추가하기
 console.log(queue.dequeue()); // 추가한지 가장 오래된 - 먼저 들어간 - 하나 꺼내기
-
 /////////////////////////////////////////////////////////////
 
 //이전 장표에서 작성한 Stack과 Queue에 공통 기능을 확장하시오.(Collection)
@@ -145,30 +138,31 @@ console.log(queue.dequeue()); // 추가한지 가장 오래된 - 먼저 들어�
 // remove: 가장 (Stack:나중, Queue:먼저) 들어간 요소 삭제(skip)
 
 class Collection {
-    constructor () {
-        this.ret = [];
-        this.isStack = (this.pop) ? true : false;
+    #ret = [];
+    _get () {
+        return this.#ret;
     }
+    isStack = (this.pop) ? true : false;
     get isEmpty () {
-        return (this.ret.length > 0) ? false : true;
+        return (this.#ret.length > 0) ? false : true;
     }
     get peek () {
-        return (this.isStack) ? this.ret.slice(this.length - 1) : this.ret.slice(0, 1);
+        return (this.isStack) ? this.#ret.slice(this.length - 1) : this.#ret.slice(0, 1);
     }
     get poll () {
         return (this.isStack) ? this.pop() : this.dequeue();
     }
     get length () {
-        return this.ret.length;
+        return this.#ret.length;
     }
     clear () {
-        this.ret = [];
+        this.#ret = [];
     }
     toArray () {
-        return this.ret;
+        return this.#ret;
     }
     print () {
-        console.log(this.ret);
+        console.log(this.#ret);
     }
     remove () {
         (this.isStack) ? this.pop() : this.dequeue();
@@ -177,45 +171,46 @@ class Collection {
 
 class Stack2 extends Collection {
     push (num) {
-        this.ret.push(num);
-        return this.ret;
+        return this._get().push(num);
     }
     pop () {
-        return this.ret.pop();
+        return this._get().pop();
     }
 }
 
 class Queue2 extends Collection{
     enqueue (num) {
-        this.ret.push(num);
-        return this.ret;
+        return this._get().push(num);
     }
     dequeue () {
-        return this.ret.shift();
+        return this._get().shift();
     }
 }
 
-const stack2 = new Stack2;
-const queue2 = new Queue2;
+const stack2 = new Stack2();
+const queue2 = new Queue2();
 stack2.push(1); // 추가하기
 stack2.push(2); // 추가하기
 stack2.push(3); // 추가하기
 stack2.push(4); // 추가하기
+stack2.print();
 queue2.enqueue(5); // 추가하기
 queue2.enqueue(6); // 추가하기
 queue2.enqueue(7); // 추가하기
 queue2.enqueue(8); // 추가하기
+queue2.print();
 console.log(stack2);
 console.log(queue2);
 console.log(stack2.peek, queue2.peek); // 마지막(다음에 나올) 원소
 console.log(stack2.poll, queue2.poll); // 마지막(다음에 나올) 원소
-console.log(stack2);
-console.log(queue2);
+stack2.print();
 queue2.print(); // 출력해보기
 
-const arr2 = queue2.toArray().map(a => console.log(a));
-
+queue2.toArray().map(a => console.log(a));
 if (!stack2.isEmpty) stack2.clear();
-console.log(stack2);
+stack2.print();
 if (queue2.length) queue2.clear();
-console.log(queue2);
+queue2.print();
+
+////////////////////////////////////////////////////////////////////////////////
+

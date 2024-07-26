@@ -185,10 +185,10 @@ class Stack2 extends Collection {
 
 class Queue2 extends Collection{
     enqueue (num) {
-        return this._get().push(num);
+        return this._get().unshift(num);
     }
     dequeue () {
-        return this._get().shift();
+        return this._get().pop();
     }
 }
 
@@ -296,11 +296,10 @@ class IterStack {
 class IterQueue {
     #ret = [];
     enqueue (num) {
-        this.#ret.push(num);
-        return this.#ret;
+        return this.#ret.unshift(num);
     }
     dequeue () {
-        return this.#ret.shift();
+        return this.#ret.pop();
     }
     iterator () {
         return this[Symbol.iterator]();
@@ -455,7 +454,6 @@ console.log([...route3]);
 console.log([...route3].length);
 console.log([...route4].length);
 
-
 //////////////////////////////////////////////////////////////////////////////////
 
 /*
@@ -463,9 +461,6 @@ Collection 클래스를 상속받아 List 메소드들과 클래스 메소드 ar
 
 */
 class Collection3 {
-    constructor () {
-
-    }
     #ret = [];
     _getRet () {
         return this.#ret;
@@ -581,6 +576,7 @@ class Collection3 {
         return this[Symbol.iterator]();
     }
     [Symbol.iterator]() {
+        //for (i = 0; i < this.#ret.length; i += 1) yield 
         let data = this.#ret;
         let num = 0;
         return {
@@ -690,9 +686,7 @@ Array.prototype.uniqBy = function(prop) {
 ]
 */
 Array.prototype.uniqBy = function(prop) {
-    let ret = []; 
-    this.map((val) => ret.push(val[prop]));
-    return [...new Set(ret)];
+    return [...new Set(this.map((val) => val[prop]))];
 }
 Object.defineProperty(Array.prototype, 'uniqBy', { enumerable : false });
 
@@ -753,7 +747,6 @@ assert.deepStrictEqual(union(A, C), [1, 2, 3, 4, 5, 11, 222, 555]); // [1, 2, 3,
 깊은 복사 deepCopy 함수 작성
 (Map, Set, WeakMap, WeakSet도 복사)
 */
-
 const kim2 = {
   nid: 3,
   addr: 'Pusan',
@@ -767,7 +760,7 @@ const kim2 = {
   zs: new Set([arr, hong]),
   zws: new WeakSet([arr, hong]),
   zm: new Map([[hong, arr]]),
-  zwm: new WeakMap([[hong, arr]]),
+  zwm: new WeakMap([[hong, arr]])
 };
 
 function deepCopy (obj) {
@@ -790,6 +783,7 @@ function deepCopy (obj) {
     Object.getOwnPropertySymbols(obj).map((val) => ret[val] = obj[val]);
     return ret = loop(obj, ret);
 }
+
 console.log(kim2);
 const newKim = deepCopy(kim2);
 console.log(newKim);
@@ -872,14 +866,15 @@ function mkCal (year, month, date) {
         let weekDay = dat.getDay();
         let d = dat.getDate();
         if (startDay >= d && stop) {
-            for (let i = 0; i < startDay; i += 1) cal += `* `;
+            for (let i = 0; i < startDay; i += 1) cal += `   `;
             stop = false;
         }
+        d = d.toString().padStart(2, 0);
         cal += (weekDay === 6) ? `${d}\n` : `${d} `;
     }
     console.log(cal);
 }
-mkCal(2024, 5, 3);
+mkCal(2024, 6, 3);
 
 
 
@@ -963,7 +958,7 @@ mkCal(2024, 5, 3);
             dayMath.innerHTML = getNextWeek2();
         }, 500);
         search.onkeyup = debounce((e) => {
-            console.log(new Date(), ' search >>', search.value)
+            console.log(new Date().toISOString(), ' search >>', search.value);
         }, 500)
 
     </script>
@@ -994,12 +989,10 @@ function fmt (txt, arg) {
 function isEndJaum(txt) {
     let start = '가'.charCodeAt(0);
     let target = txt.slice(-1);
-    let chk = false;
-    chk = ((target.charCodeAt(0) - start) % 28 === 0) ? false : true;
+    let chk = ((target.charCodeAt(0) - start) % 28 !== 0);
     if (/[ㅏ-ㅣ]/.test(target)) chk = false;
-    if (/[A-z]/.test(target)) chk = (/[L|M|N|R|l|m|n|r]/.test(target)) ? true : false;
-    if (/[0-9]/.test(target)) chk = (/[0|1|3|6|7|8|9]/.test(target)) ? true : false;
-    //일 이 삼 사 오 륙 칠 팔 구 십
+    if (/[A-z]/.test(target)) chk = /[L|M|N|R|l|m|n|r]/.test(target);
+    if (/[0-9]/.test(target)) chk = /[0|1|3|6|7|8]/.test(target);
     return chk;
 }
 
@@ -1051,26 +1044,17 @@ console.log(`고성군${irang('고성군')}`);
 
 let s = ['강원도 고성군', '고성군 토성면', '토성면 북면', '북면', '김1수'];
 
+const ㄱㄴㄷ = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+const 가나다 = '가까나다따라마바빠사싸아자짜차카타파하';
+
 function searchByKoreanInitialSound (txts, reg) {
-    let ret = [];
-    let exp;
-    switch (reg) {
-        case 'ㄱㅇ' : exp = /[가-깋][아-잏]/;
-            break;
-        case 'ㄱㅅㄱ' : exp = /[가-깋][사-싷][가-깋]/;
-            break;
-        case 'ㅌㅅㅁ' : exp = /[타-팋][사-싷][마-밓]/;
-            break;
-        case 'ㅂㅁ' : exp = /[바-빟][마-밓]/;
-            break;
-        case 'ㅍㅁ' : exp = /[파-핗][마-밓]/;
-            break;
-        case 'ㄱ1ㅅ' : exp = /[가-깋][1][사-싷]/;
-            break;
-        default : return;
-    }
-    txts.map((val) => { if (val.match(exp)) ret.push(val);});
-    return ret;
+    const exp = [...reg].reduce((acc, a) => {
+        const s = ㄱㄴㄷ.search(a);
+        const e = String.fromCharCode(가나다[s + 1].charCodeAt(0) - 1);
+        return (/[0-9A-z]/.test(a)) ? `${acc}${a}` : `${acc}[${가나다[s]}-${e}]`;
+    }, '');
+    const regexp = new RegExp(exp);
+    return txts.filter((val) => regexp.test(val));
 }
 
 searchByKoreanInitialSound(s, 'ㄱㅅㄱ');

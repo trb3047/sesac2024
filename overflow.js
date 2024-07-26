@@ -1,22 +1,20 @@
-'use strict';
+const assert = require('assert');
 
-const never = memoized(function (n) {
-    return (n <= 1) ? n : n + never(n - 1);
-});
-
-function memoized (fn) {
-    let table = {};
-    let stop = 0;
-
+function neverOverflow (num) {
+    let stopN = 0;
+    let ret = result(num);
+    
+    while (stopN !== 0) ret += result(stopN);
     function result (n) {
         try {
-            return table[n] || (table[n] = fn(n));
+            stopN = 0;
+            return (n <= 1) ?  n : n + result(n - 1);
         } catch (err) {
-            //stop = n - 2;
-            //return fn(stop);
+            stopN = n;
+            return 0;
         }
     }
-    return result;
+    return ret;
 }
 
-console.log(never(1000));
+console.log(neverOverflow(10000000));

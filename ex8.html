@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>요일 변경!</title>
+</head>
+<body>
+    <p>
+        <button id="btnKor">국어 수업 요일선택 ></button>
+        <span id="dayKor">요일을 선택하세요!</span>
+    </p>
+    <p>
+        <button id="btnMath">수학 수업 요일선택 ></button>
+        <span id="dayMath">요일을 선택하세요!</span>
+    </p>
+    <p>
+        <input type="text" id="search" placeholder="검색어를 입력하세요">
+    </p>
+    <script>
+        const weeks = ['일', '월', '화', '수', '목', '금', '토'];
+
+        function closure () {
+            let week = weeks;
+            let idx = -1;
+            function fn () {
+                idx += 1;
+                if (idx >= week.length) idx = 0;
+                return `${week[idx]}요일`;
+            }
+            return fn;
+        }
+
+        function debounce (fn, delay) {
+            let timer;
+            return function (...args) {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(fn, delay);
+            }
+        }
+
+        function throttle (fn, delay) {
+            let timer;
+            return function (...args) {
+                if (timer) return;
+                timer = setTimeout(() => {
+                    fn();
+                    timer = null;
+                }, delay);
+            }
+        }
+        
+        const getNextWeek = closure();
+        const getNextWeek2 = closure();
+
+        btnKor.onclick = debounce(() => {
+            dayKor.innerHTML = getNextWeek();
+        }, 500)
+        btnMath.onclick = throttle(() => {
+            dayMath.innerHTML = getNextWeek2();
+        }, 500);
+        search.onkeyup = debounce((e) => {
+            console.log(new Date().toISOString(), ' search >>', search.value);
+        }, 500)
+
+    </script>
+</body>
+</html>
