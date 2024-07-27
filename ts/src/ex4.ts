@@ -12,18 +12,16 @@ interface IDept1 {
     captain: string;
 }
 
-//????
-type Combine<T, U> = { [ k in keyof (T & U) ]: (T & U)[k] extends never ? keyof (T & U)[k] : (T & U)[k] };
+type Combine<T, U> = { [ k in (keyof T) & (keyof U) ]: (T & U)[k] extends never ? keyof (T & U)[k] : (T & U)[k] };
 type ICombined = Combine<IUser1, IDept1>;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 //특정 함수의 인자 타입을 추출하는 유틸리티 타입을 작성하시오. (infer)
 
-type FirstArgs<F> = F extends (a: infer R, ...args: any[]) => any ? R : never;
-type SecondArgs<F> = F extends (a: any, b: infer R, ...args: any[]) => any ? R : never; 
-//????
-type Args<F> = F extends (...args: infer R) => any ? keyof R : never;
+type FirstArgs<F> = F extends (a: infer R, b: any) => any ? R : never;
+type SecondArgs<F> = F extends (a: any, b: infer R) => any ? R : never; 
+type Args<F> = F extends (...args: infer R) => any ? (R[1] extends undefined ? R[0] : R[0] | R[1]) : never;
 
 function add(a: number, b: string) { 
     return `${a} - ${b}`;
